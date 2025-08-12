@@ -3,20 +3,29 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { LanguageSelector } from "@/components/ui/language-selector";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Search, Menu, Infinity } from "lucide-react";
 
-const navigation = [
-  { name: "Главная", href: "/" },
-  { name: "Манифест", href: "/manifest" },
-  { name: "Институт", href: "/institute" },
-  { name: "Журнал", href: "/journal" },
-  { name: "Форум", href: "/forum" },
-  { name: "Проекты", href: "/projects" },
+// Navigation will be made multilingual
+const getNavigation = (t: (key: string) => string) => [
+  { name: t('nav.home'), href: "/" },
+  { name: t('nav.manifest'), href: "/manifest" },
+  { name: t('nav.codex'), href: "/codex" },
+  { name: t('nav.institute'), href: "/institute" },
+  { name: t('nav.journal'), href: "/journal" },
+  { name: t('nav.news'), href: "/news" },
+  { name: t('nav.forum'), href: "/forum" },
+  { name: t('nav.projects'), href: "/projects" },
+  { name: t('nav.library'), href: "/library" },
+  { name: t('nav.dictionary'), href: "/dictionary" },
 ];
 
 export default function Header() {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
+  const { t } = useLanguage();
+  const navigation = getNavigation(t);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,12 +64,12 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Search and Mobile Menu */}
+          {/* Search, Language Selector and Mobile Menu */}
           <div className="flex items-center space-x-4">
             <form onSubmit={handleSearch} className="relative hidden md:block">
               <Input
                 type="text"
-                placeholder="Поиск..."
+                placeholder={t('common.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-64 pl-10 pr-4"
@@ -68,6 +77,8 @@ export default function Header() {
               />
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
             </form>
+            
+            <LanguageSelector />
             
             {/* Mobile menu */}
             <Sheet>
@@ -95,12 +106,15 @@ export default function Header() {
                   <form onSubmit={handleSearch} className="mt-6">
                     <Input
                       type="text"
-                      placeholder="Поиск..."
+                      placeholder={t('common.search')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       data-testid="input-mobile-search"
                     />
                   </form>
+                  <div className="mt-6">
+                    <LanguageSelector />
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

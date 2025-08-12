@@ -6,6 +6,8 @@ import { HeroSection } from "@/components/ui/hero-section";
 import { SectionCard } from "@/components/ui/section-card";
 import { ProjectCard } from "@/components/ui/project-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLocalizedContent } from "@/hooks/useLocalizedContent";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   ScrollText, 
   Book, 
@@ -105,6 +107,9 @@ const instituteDisciplines = [
 ];
 
 export default function Home() {
+  const { getLocalizedContent } = useLocalizedContent();
+  const { t } = useLanguage();
+  
   const { data: news, isLoading: newsLoading } = useQuery<NewsItem[]>({
     queryKey: ["/api/news"],
   });
@@ -117,17 +122,17 @@ export default function Home() {
     <div className="font-inter bg-white text-secondary">
       {/* Hero Section */}
       <HeroSection 
-        title="Интегральное сообщество" 
-        subtitle="Консолидация всех конструктивных сил на основе принципов интегральной философии"
+        title={t('home.hero.title')} 
+        subtitle={t('home.hero.subtitle')}
       >
         <Button asChild className="bg-accent hover:bg-emerald-600 text-white" data-testid="button-manifest">
-          <Link href="/manifest">Манифест</Link>
+          <Link href="/manifest">{t('home.hero.manifestButton')}</Link>
         </Button>
         <Button asChild variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white/20" data-testid="button-codex">
-          <Link href="/codex">Кодекс</Link>
+          <Link href="/codex">{t('home.hero.codexButton')}</Link>
         </Button>
         <Button asChild variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white/20" data-testid="button-institute">
-          <Link href="/institute">Институт</Link>
+          <Link href="/institute">{t('home.hero.instituteButton')}</Link>
         </Button>
       </HeroSection>
 
@@ -135,7 +140,7 @@ export default function Home() {
       <section className="py-16 bg-light-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12" data-testid="text-community-sections-title">
-            Разделы сообщества
+            {t('home.community.title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {communitySections.map((section) => (
@@ -150,10 +155,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4" data-testid="text-institute-title">
-              Институт интегрального знания
+              {t('home.institute.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto" data-testid="text-institute-description">
-              Академические дисциплины и исследовательские направления в области интегральной философии
+              {t('home.institute.subtitle')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -183,10 +188,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4" data-testid="text-projects-title">
-              Основные проекты
+              {t('home.projects.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto" data-testid="text-projects-description">
-              Философские инициативы и исследовательские направления интегрального сообщества
+              {t('home.projects.subtitle')}
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -210,8 +215,8 @@ export default function Home() {
               projects?.map((project) => (
                 <ProjectCard
                   key={project.id}
-                  title={project.title}
-                  description={project.description}
+                  title={getLocalizedContent(project.title)}
+                  description={getLocalizedContent(project.description)}
                   href={`/projects#${project.id}`}
                   icon={project.icon || "infinity"}
                   gradient={project.gradient || "from-primary to-blue-600"}
@@ -229,9 +234,9 @@ export default function Home() {
             {/* News Section */}
             <div>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold" data-testid="text-news-title">Последние новости</h2>
+                <h2 className="text-2xl font-bold" data-testid="text-news-title">{t('home.news.title')}</h2>
                 <Button asChild variant="link" className="text-accent hover:text-emerald-700" data-testid="link-all-news">
-                  <Link href="/news">Все новости</Link>
+                  <Link href="/news">{t('common.allNews')}</Link>
                 </Button>
               </div>
               <div className="space-y-6">
@@ -253,10 +258,10 @@ export default function Home() {
                       <div className="flex items-start space-x-4">
                         <div className="flex-1">
                           <h3 className="font-semibold text-lg mb-2 hover:text-primary cursor-pointer transition-colors" data-testid={`text-news-${item.id}-title`}>
-                            {item.title}
+                            {getLocalizedContent(item.title)}
                           </h3>
                           <p className="text-gray-600 mb-2" data-testid={`text-news-${item.id}-excerpt`}>
-                            {item.excerpt}
+                            {getLocalizedContent(item.excerpt || { ru: '', en: '', cn: '' })}
                           </p>
                           <div className="flex items-center text-sm text-gray-500">
                             <Calendar className="w-4 h-4 mr-2" />
@@ -277,9 +282,9 @@ export default function Home() {
             {/* Forum Activity Placeholder */}
             <div>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold" data-testid="text-forum-title">Активность форума</h2>
+                <h2 className="text-2xl font-bold" data-testid="text-forum-title">{t('home.forum.title')}</h2>
                 <Button asChild variant="link" className="text-accent hover:text-emerald-700" data-testid="link-forum">
-                  <Link href="/forum">Перейти к форуму</Link>
+                  <Link href="/forum">{t('common.allForum')}</Link>
                 </Button>
               </div>
               <div className="space-y-6">

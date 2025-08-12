@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertArticleSchema, insertNewsSchema, insertForumPostSchema, insertProjectSchema } from "@shared/schema";
+import { insertArticleSchema, insertNewsSchema, insertForumPostSchema, insertProjectSchema, insertContentTemplateSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Articles routes
@@ -147,6 +147,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(project);
     } catch (error) {
       res.status(400).json({ message: "Invalid project data" });
+    }
+  });
+
+  // Content Template routes
+  app.get("/api/content-templates", async (req, res) => {
+    try {
+      const templates = await storage.getContentTemplates();
+      res.json(templates);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch content templates" });
+    }
+  });
+
+  app.get("/api/content-templates/:key", async (req, res) => {
+    try {
+      const template = await storage.getContentTemplate(req.params.key);
+      if (!template) {
+        return res.status(404).json({ message: "Content template not found" });
+      }
+      res.json(template);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch content template" });
+    }
+  });
+
+  app.post("/api/content-templates", async (req, res) => {
+    try {
+      const validatedData = insertContentTemplateSchema.parse(req.body);
+      const template = await storage.createContentTemplate(validatedData);
+      res.status(201).json(template);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid content template data" });
     }
   });
 
